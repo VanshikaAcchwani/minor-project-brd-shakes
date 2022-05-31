@@ -60,14 +60,14 @@ export default function PaymentScreen() {
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
               >
-                <FormControlLabel
+                {/* <FormControlLabel
                   label="PayPal"
                   value="PayPal"
                   control={<Radio />}
-                ></FormControlLabel>
+                ></FormControlLabel> */}
                 <FormControlLabel
-                  label="Stripe"
-                  value="Stripe"
+                  label="Gpay"
+                  value="Gpay"
                   control={<Radio />}
                 ></FormControlLabel>
                 <FormControlLabel

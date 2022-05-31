@@ -21,6 +21,7 @@ import Image from 'next/image';
 import React, { useContext, useEffect, useReducer } from 'react';
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 // import GPayButton from 'react-google-pay-button'
+import GooglePayButton from '@google-pay/button-react';
 import Layout from '../../components/Layout';
 import classes from '../../utils/classes';
 import { Store } from '../../utils/Store';
@@ -59,13 +60,7 @@ function OrderScreen({ params }) {
     }
   );
 
-  const {
-    paymentMethod,
-    orderItems,
-    itemsPrice,
-    totalPrice,
-    isPaid,
-  } = order;
+  const { paymentMethod, orderItems, itemsPrice, totalPrice, isPaid } = order;
 
   const router = useRouter();
   const { state } = useContext(Store);
@@ -161,7 +156,6 @@ function OrderScreen({ params }) {
       ) : (
         <Grid container spacing={1}>
           <Grid item md={9} xs={12}>
-
             <Card sx={classes.section}>
               <List>
                 <ListItem>
@@ -267,11 +261,53 @@ function OrderScreen({ params }) {
                       <CircularProgress />
                     ) : (
                       <Box sx={classes.fullWidth}>
-                        <PayPalButtons
+                        {/* <PayPalButtons
                           createOrder={createOrder}
                           onApprove={onApprove}
                           onError={onError}
-                        ></PayPalButtons>
+                        ></PayPalButtons> */}
+
+                        <GooglePayButton
+                          environment="TEST"
+                          paymentRequest={{
+                            apiVersion: 2,
+                            apiVersionMinor: 0,
+                            allowedPaymentMethods: [
+                              {
+                                type: 'CARD',
+                                parameters: {
+                                  allowedAuthMethods: [
+                                    'PAN_ONLY',
+                                    'CRYPTOGRAM_3DS',
+                                  ],
+                                  allowedCardNetworks: ['MASTERCARD', 'VISA'],
+                                },
+                                tokenizationSpecification: {
+                                  type: 'PAYMENT_GATEWAY',
+                                  parameters: {
+                                    gateway: 'example',
+                                    gatewayMerchantId:
+                                      'exampleGatewayMerchantId',
+                                  },
+                                },
+                              },
+                            ],
+                            merchantInfo: {
+                              merchantId: '12345678901234567890',
+                              merchantName: 'Demo Merchant',
+                            },
+                            transactionInfo: {
+                              totalPriceStatus: 'FINAL',
+                              totalPriceLabel: 'Total',
+                              totalPrice: '100.00',
+                              currencyCode: 'INR',
+                              countryCode: 'IN',
+                            },
+                          }}
+                          onLoadPaymentData={(paymentRequest) => {
+                            console.log('load payment data', paymentRequest);
+                          }}
+                        />
                       </Box>
                     )}
                   </ListItem>
