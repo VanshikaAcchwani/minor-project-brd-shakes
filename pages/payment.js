@@ -66,8 +66,8 @@ export default function PaymentScreen() {
                   control={<Radio />}
                 ></FormControlLabel> */}
                 <FormControlLabel
-                  label="Gpay"
-                  value="Gpay"
+                  label="GPay"
+                  value="GPay"
                   control={<Radio />}
                 ></FormControlLabel>
                 <FormControlLabel
