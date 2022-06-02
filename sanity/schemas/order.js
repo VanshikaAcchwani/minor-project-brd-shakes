@@ -59,11 +59,6 @@ export default {
         type: 'datetime',
       },
       {
-        title: 'IsDelivered',
-        name: 'isDelivered',
-        type: 'boolean',
-      },
-      {
         title: 'CreatedAt',
         name: 'createdAt',
         type: 'datetime',
