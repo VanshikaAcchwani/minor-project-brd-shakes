@@ -20,7 +20,6 @@ import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import React, { useContext, useEffect, useReducer } from 'react';
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
-// import GPayButton from 'react-google-pay-button'
 import GooglePayButton from '@google-pay/button-react';
 import Layout from '../../components/Layout';
 import classes from '../../utils/classes';
@@ -29,6 +28,7 @@ import { useRouter } from 'next/router';
 import { getError } from '../../utils/error';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
+import {useState} from 'react'
 
 function reducer(state, action) {
   switch (action.type) {
@@ -51,6 +51,7 @@ function reducer(state, action) {
 function OrderScreen({ params }) {
   const { enqueueSnackbar } = useSnackbar();
   const { id: orderId } = params;
+  const paidAt = 'GPay';
   const [{ loading, error, order, successPay }, dispatch] = useReducer(
     reducer,
     {
@@ -60,13 +61,15 @@ function OrderScreen({ params }) {
     }
   );
 
-  const { paymentMethod, orderItems, itemsPrice, totalPrice, isPaid } = order;
-
+  let { paymentMethod, orderItems, itemsPrice, totalPrice, isPaid } = order;
   const router = useRouter();
   const { state } = useContext(Store);
   const { userInfo } = state;
 
-  const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
+  const { isPending } = state;
+  // console.log(isPaid)
+
+  // const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
 
   useEffect(() => {
     if (!userInfo) {
@@ -90,22 +93,9 @@ function OrderScreen({ params }) {
         dispatch({ type: 'PAY_RESET' });
       }
     } else {
-      const loadPaypalScript = async () => {
-        const { data: clientId } = await axios.get('/api/keys/paypal', {
-          headers: { authorization: `Bearer ${userInfo.token}` },
-        });
-        paypalDispatch({
-          type: 'resetOptions',
-          value: {
-            'client-id': clientId,
-            currency: 'USD',
-          },
-        });
-        paypalDispatch({ type: 'setLoadingStatus', value: 'pending' });
-      };
-      loadPaypalScript();
+      console.log('none');
     }
-  }, [order, orderId, successPay, paypalDispatch, router, userInfo]);
+  }, [order, orderId, successPay, router, userInfo]);
 
   function createOrder(data, actions) {
     return actions.order
@@ -165,7 +155,7 @@ function OrderScreen({ params }) {
                 </ListItem>
                 <ListItem>{paymentMethod}</ListItem>
                 <ListItem>
-                  Status: {isPaid ? `paid at ₹{paidAt}` : 'not paid'}
+                  Status: {isPaid ? `paid with ${paidAt}` : 'not paid'}
                 </ListItem>
               </List>
             </Card>
@@ -299,14 +289,36 @@ function OrderScreen({ params }) {
                             transactionInfo: {
                               totalPriceStatus: 'FINAL',
                               totalPriceLabel: 'Total',
-                              totalPrice: '100.00',
+                              totalPrice: totalPrice.toString(),
                               currencyCode: 'INR',
                               countryCode: 'IN',
                             },
+                            shippingAddressRequired: true,
+                            callbackIntents: [
+                              'SHIPPING_ADDRESS',
+                              'PAYMENT_AUTHORIZATION',
+                            ],
                           }}
                           onLoadPaymentData={(paymentRequest) => {
-                            console.log('load payment data', paymentRequest);
+                            console.log('Success', paymentRequest);
                           }}
+                          onPaymentAuthorized={(paymentData) => {
+                            order.isPaid=true;
+                            isPaid = true;
+                            console.log(
+                              'Payment Authorised Success',
+                              paymentData
+                            );
+                            
+                            return { transactionState: 'SUCCESS' };
+                          }}
+                          onPaymentDataChanged={(paymentData) => {
+                            console.log('On Payment Data Changed', paymentData);
+                            return {};
+                          }}
+                          existingPaymentMethodRequired="false"
+                          buttonColor="black"
+                          buttonType="Buy"
                         />
                       </Box>
                     )}
