@@ -62,14 +62,13 @@ function OrderScreen({ params }) {
   );
 
   let { paymentMethod, orderItems, itemsPrice, totalPrice, isPaid } = order;
+  const [text, setText] = useState('inital text');
   const router = useRouter();
   const { state } = useContext(Store);
   const { userInfo } = state;
 
   const { isPending } = state;
   // console.log(isPaid)
-
-  // const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
 
   useEffect(() => {
     if (!userInfo) {
@@ -96,7 +95,6 @@ function OrderScreen({ params }) {
       console.log('none');
     }
   }, [order, orderId, successPay, router, userInfo]);
-
   function createOrder(data, actions) {
     return actions.order
       .create({
@@ -305,11 +303,26 @@ function OrderScreen({ params }) {
                           onPaymentAuthorized={(paymentData) => {
                             order.isPaid=true;
                             isPaid = true;
+                            setText('new text');
                             console.log(
                               'Payment Authorised Success',
                               paymentData
                             );
-                            
+                            // const { data } = axios.put(
+                            //   '/api/orders',
+                            //   { 
+                            //     orderId,  
+                            //     paymentMethod,
+                            //     itemsPrice,
+                            //     totalPrice,
+                            //     isPaid
+                            //   },
+                            //   {
+                            //     headers: {
+                            //       authorization: `Bearer ${userInfo.token}`,
+                            //     },
+                            //   }
+                            // );
                             return { transactionState: 'SUCCESS' };
                           }}
                           onPaymentDataChanged={(paymentData) => {
