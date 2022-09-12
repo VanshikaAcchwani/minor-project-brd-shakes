@@ -6,12 +6,11 @@ import {
   ListItem,
   Radio,
   RadioGroup,
-  Typography,
 } from '@mui/material';
 import jsCookie from 'js-cookie';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import CheckoutWizard from '../components/CheckoutWizard';
 import Form from '../components/Form';
 import Layout from '../components/Layout';
@@ -23,7 +22,7 @@ export default function PaymentScreen() {
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const [paymentMethod, setPaymentMethod] = useState('');
-  const { state, dispatch } = useContext(Store);
+  const { dispatch } = useContext(Store);
   const {
     userInfo
   } = state;

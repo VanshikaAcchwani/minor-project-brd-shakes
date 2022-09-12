@@ -19,7 +19,6 @@ import NextLink from 'next/link';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import React, { useContext, useEffect, useReducer } from 'react';
-import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import GooglePayButton from '@google-pay/button-react';
 import Layout from '../../components/Layout';
 import classes from '../../utils/classes';
@@ -27,8 +26,6 @@ import { Store } from '../../utils/Store';
 import { useRouter } from 'next/router';
 import { getError } from '../../utils/error';
 import axios from 'axios';
-import { useSnackbar } from 'notistack';
-import {useState} from 'react'
 
 function reducer(state, action) {
   switch (action.type) {
@@ -49,7 +46,6 @@ function reducer(state, action) {
   }
 }
 function OrderScreen({ params }) {
-  const { enqueueSnackbar } = useSnackbar();
   const { id: orderId } = params;
   const paidAt = 'GPay';
   const [{ loading, error, order, successPay }, dispatch] = useReducer(
@@ -62,7 +58,7 @@ function OrderScreen({ params }) {
   );
 
   let { paymentMethod, orderItems, itemsPrice, totalPrice, isPaid } = order;
-  const [text, setText] = useState('inital text');
+  // const [text, setText] = useState('inital text');
   const router = useRouter();
   const { state } = useContext(Store);
   const { userInfo } = state;
@@ -95,41 +91,7 @@ function OrderScreen({ params }) {
       console.log('none');
     }
   }, [order, orderId, successPay, router, userInfo]);
-  function createOrder(data, actions) {
-    return actions.order
-      .create({
-        purchase_units: [
-          {
-            amount: { value: totalPrice },
-          },
-        ],
-      })
-      .then((orderID) => {
-        return orderID;
-      });
-  }
-  function onApprove(data, actions) {
-    return actions.order.capture().then(async function (details) {
-      try {
-        dispatch({ type: 'PAY_REQUEST' });
-        const { data } = await axios.put(
-          `/api/orders/${order._id}/pay`,
-          details,
-          {
-            headers: { authorization: `Bearer ${userInfo.token}` },
-          }
-        );
-        dispatch({ type: 'PAY_SUCCESS', payload: data });
-        enqueueSnackbar('Order is paid', { variant: 'success' });
-      } catch (err) {
-        dispatch({ type: 'PAY_FAIL', payload: getError(err) });
-        enqueueSnackbar(getError(err), { variant: 'error' });
-      }
-    });
-  }
-  function onError(err) {
-    enqueueSnackbar(getError(err), { variant: 'error' });
-  }
+
 
   return (
     <Layout title={`Order ${orderId}`}>
@@ -303,26 +265,11 @@ function OrderScreen({ params }) {
                           onPaymentAuthorized={(paymentData) => {
                             order.isPaid=true;
                             isPaid = true;
-                            setText('new text');
+                            // setText('new text');
                             console.log(
                               'Payment Authorised Success',
                               paymentData
                             );
-                            // const { data } = axios.put(
-                            //   '/api/orders',
-                            //   { 
-                            //     orderId,  
-                            //     paymentMethod,
-                            //     itemsPrice,
-                            //     totalPrice,
-                            //     isPaid
-                            //   },
-                            //   {
-                            //     headers: {
-                            //       authorization: `Bearer ${userInfo.token}`,
-                            //     },
-                            //   }
-                            // );
                             return { transactionState: 'SUCCESS' };
                           }}
                           onPaymentDataChanged={(paymentData) => {

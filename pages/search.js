@@ -1,16 +1,8 @@
 import {
     Alert,
-    Button,
     CircularProgress,
     Grid,
-    List,
-    ListItem,
-    MenuItem,
-    Rating,
-    Select,
-    Typography,
   } from '@mui/material';
-  // import { Box } from '@mui/system';
   import axios from 'axios';
   import { useRouter } from 'next/router';
   import { useSnackbar } from 'notistack';
@@ -21,23 +13,6 @@ import {
   import client from '../utils/client';
   import { urlForThumbnail } from '../utils/image';
   import { Store } from '../utils/Store';
-  
-  const prices = [
-    {
-      name: '$1 to $50',
-      value: '1-50',
-    },
-    {
-      name: '$51 to $200',
-      value: '51-200',
-    },
-    {
-      name: '$201 to $1000',
-      value: '201-1000',
-    },
-  ];
-  
-  const ratings = [1, 2, 3, 4, 5];
   
   export default function SearchScreen() {
     const router = useRouter();
@@ -56,7 +31,7 @@ import {
     });
   
     const { loading, products, error } = state;
-    const [categories, setCategories] = useState([]);
+    const [, setCategories] = useState([]);
     useEffect(() => {
       const fetchCategories = async () => {
         try {
@@ -104,33 +79,7 @@ import {
       fetchData();
     }, [category, price, query, rating, sort]);
   
-    const filterSearch = ({ category, sort, searchQuery, price, rating }) => {
-      const path = router.pathname;
-      const { query } = router;
-      if (searchQuery) query.searchQuery = searchQuery;
-      if (category) query.category = category;
-      if (sort) query.sort = sort;
-      if (price) query.price = price;
-      if (rating) query.rating = rating;
-  
-      router.push({
-        pathname: path,
-        query: query,
-      });
-    };
-    const categoryHandler = (e) => {
-      filterSearch({ category: e.target.value });
-    };
-    const sortHandler = (e) => {
-      filterSearch({ sort: e.target.value });
-    };
-    const priceHandler = (e) => {
-      filterSearch({ price: e.target.value });
-    };
-    const ratingHandler = (e) => {
-      filterSearch({ rating: e.target.value });
-    };
-  
+    
     const {
       state: { cart },
       dispatch,
@@ -167,78 +116,7 @@ import {
       <Layout title="search">
         <Grid sx={classes.section} container spacing={2}>
           <Grid item md={12}>
-            {/* <List>
-              <ListItem>
-                <Box sx={classes.fullWidth}>
-                  {/* <Typography>Categories</Typography> */}
-                  {/* <Select fullWidth value={category} onChange={categoryHandler}>
-                    <MenuItem value="all">All</MenuItem>
-                    {categories &&
-                      categories.map((category) => (
-                        <MenuItem key={category} value={category}>
-                          {category}
-                        </MenuItem>
-                      ))}
-                  </Select> 
-                </Box>
-              </ListItem>
-              <ListItem>
-                <Box sx={classes.fullWidth}>
-                  {/* <Typography>Prices</Typography>
-                  <Select value={price} onChange={priceHandler} fullWidth>
-                    <MenuItem value="all">All</MenuItem>
-                    {prices.map((price) => (
-                      <MenuItem key={price.value} value={price.value}>
-                        {price.name}
-                      </MenuItem>
-                    ))}
-                  </Select> 
-                </Box>
-              </ListItem>
-              <ListItem>
-                <Box sx={classes.fullWidth}>
-                  {/* <Typography>Ratings</Typography>
-                  <Select value={rating} onChange={ratingHandler} fullWidth>
-                    <MenuItem value="all">All</MenuItem>
-                    {ratings.map((rating) => (
-                      <MenuItem dispaly="flex" key={rating} value={rating}>
-                        <Rating value={rating} readOnly />
-                        <Typography component="span">&amp; Up</Typography>
-                      </MenuItem>
-                    ))}
-                  </Select> 
-                </Box>
-              </ListItem>
-            </List> */}
           </Grid>
-          {/* <Grid item md={9}> */}
-            {/* <Grid container justifyContent="space-between" alignItems="center">
-              <Grid item>
-                {products && products.length !== 0 ? products.length : 'No'}{' '}
-                Results
-                {query !== 'all' && query !== '' && ' : ' + query}
-                {price !== 'all' && ' : Price ' + price}
-                {rating !== 'all' && ' : Rating ' + rating + ' & up'}
-                {(query !== 'all' && query !== '') ||
-                rating !== 'all' ||
-                price !== 'all' ? (
-                  <Button onClick={() => router.push('/search')}>X</Button>
-                ) : null}
-              </Grid>
-  
-              <Grid item>
-                <Typography component="span" sx={classes.sort}>
-                  Sort by
-                </Typography>
-                <Select value={sort} onChange={sortHandler}>
-                  <MenuItem value="default">Default</MenuItem>
-                  <MenuItem value="lowest">Price: Low to High</MenuItem>
-                  <MenuItem value="highest">Price: High to Low</MenuItem>
-                  <MenuItem value="toprated">Customer Reviews</MenuItem>
-                </Select>
-              </Grid>
-            </Grid> */}
-  
             <Grid sx={classes.section} container spacing={3}>
               {loading ? (
                 <CircularProgress />
@@ -257,7 +135,6 @@ import {
                 </Grid>
               )}
             </Grid>
-          {/* </Grid> */}
         </Grid>
       </Layout>
     );
