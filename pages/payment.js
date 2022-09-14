@@ -22,7 +22,7 @@ export default function PaymentScreen() {
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const [paymentMethod, setPaymentMethod] = useState('');
-  const { dispatch } = useContext(Store);
+  const { state, dispatch } = useContext(Store);
   const {
     userInfo
   } = state;
